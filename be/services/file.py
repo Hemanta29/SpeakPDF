@@ -22,3 +22,13 @@ async def upload_pdf(db: Session, file: UploadFile):
     
 def get_all_files(db: Session):
     return db.query(PDFDocument).all()
+
+def get_file_by_id(db: Session, file_id: int):
+    return db.query(PDFDocument).filter(PDFDocument.id == file_id).first()
+
+def delete_file(db: Session, file_id: int):
+    document = get_file_by_id(db, file_id)
+    if document:
+        db.delete(document)
+        db.commit()
+    return document

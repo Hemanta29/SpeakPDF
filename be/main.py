@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, HTTPException, UploadFile, File # type: ignore
+from fastapi.responses import Response
 from sqlalchemy.orm import Session # type: ignore
 
 from database import SessionLocal, engine, Base
@@ -111,7 +112,36 @@ async def upload_pdf(
         
     return await file_service.upload_pdf(db, file)
 
+
+
+@app.get("/files/{file_id}", tags=["PDF"], response_class=Response)
+def view_file(
+    file_id: int,
+    db: Session = Depends(get_db)
+):
+    document = file_service.get_file_by_id(db, file_id)
+
+    if not document:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return Response(
+        content=document.file_data,
+        media_type="application/pdf",
+        headers={"Content-Disposition": f"inline; filename={document.filename}"}
+    )
+    
 # Get All PDF
+@app.delete("/files/{file_id}", tags=["PDF"])
+def delete_file(
+    file_id: int,
+    db: Session = Depends(get_db)
+):
+    document = file_service.delete_file(db, file_id)
+
+    if not document:
+        raise HTTPException(status_code=404, detail="File not found")
+
+    return {"message": "File deleted successfully"}
 
 @app.get("/files", tags=["PDF"], response_model=list[PDFResponse])
 def get_files(
