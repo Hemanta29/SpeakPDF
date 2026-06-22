@@ -98,7 +98,7 @@ def delete_user(
     }
 
 # Upload PDF
-@app.post("/upload-pdf", tags=["PDF"], response_model=list[PDFResponse])
+@app.post("/upload-pdf", tags=["PDF"], response_model=PDFResponse)
 async def upload_pdf(
     file: UploadFile = File(...),
     db: Session = Depends(get_db)

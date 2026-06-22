@@ -18,11 +18,7 @@ async def upload_pdf(db: Session, file: UploadFile):
     db.commit()
     db.refresh(document)
 
-    return {
-        "id": document.id,
-        "filename": document.filename,
-        "message": "PDF stored successfully"
-    }
+    return document
     
 def get_all_files(db: Session):
     return db.query(PDFDocument).all()
